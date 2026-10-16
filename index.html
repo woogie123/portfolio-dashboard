@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>2호 펀드 회수관리</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="demo-banner" class="banner" hidden>데모 모드입니다. config.js에 Supabase 값을 넣기 전까지 입력한 내용은 저장되지 않습니다.</div>
+
+  <!-- 로그인 -->
+  <main id="login-view" class="login" hidden>
+    <form id="login-form" class="card login-card">
+      <h1>2호 펀드 회수관리</h1>
+      <p class="muted">허용된 사용자만 접속할 수 있습니다.</p>
+      <label>이메일
+        <input type="email" id="login-email" autocomplete="username" required>
+      </label>
+      <label>비밀번호
+        <input type="password" id="login-password" autocomplete="current-password" required>
+      </label>
+      <p id="login-error" class="error" role="alert"></p>
+      <button type="submit" class="btn primary">로그인</button>
+    </form>
+  </main>
+
+  <!-- 앱 -->
+  <div id="app-view" hidden>
+    <header class="topbar">
+      <h1>2호 펀드 회수관리</h1>
+      <div class="topbar-right">
+        <span id="user-info" class="muted"></span>
+        <button id="btn-export" class="btn">CSV 내보내기</button>
+        <button id="btn-add" class="btn primary">회사 추가</button>
+        <button id="btn-logout" class="btn">로그아웃</button>
+      </div>
+    </header>
+
+    <main class="container">
+      <section id="summary" class="summary" aria-label="요약"></section>
+
+      <div class="toolbar">
+        <input type="search" id="filter-text" placeholder="회사명·업종·담당자 검색">
+        <select id="filter-status" aria-label="상태 필터">
+          <option value="">전체 상태</option>
+          <option value="normal">정상</option>
+          <option value="watch">관찰</option>
+          <option value="alert">주의</option>
+        </select>
+        <select id="sort" aria-label="정렬">
+          <option value="name">회사명순</option>
+          <option value="invest_date">투자일순</option>
+          <option value="invested_amount">투자금액순</option>
+          <option value="moic">MOIC순</option>
+        </select>
+      </div>
+
+      <p id="load-error" class="error" role="alert"></p>
+      <section id="cards" class="cards" aria-label="회사 목록"></section>
+    </main>
+  </div>
+
+  <!-- 상세/편집 -->
+  <dialog id="detail-dialog">
+    <form id="company-form" method="dialog">
+      <header class="dialog-head">
+        <h2 id="dialog-title">회사 정보</h2>
+        <button type="button" class="btn" id="btn-close">닫기</button>
+      </header>
+      <fieldset id="company-fields" class="grid">
+        <label>회사명 <input name="name" required></label>
+        <label>업종 <input name="sector"></label>
+        <label>투자일 <input type="date" name="invest_date"></label>
+        <label>투자단계 <input name="stage" placeholder="예: Series A"></label>
+        <label>투자금액(억원) <input type="number" step="any" min="0" name="invested_amount" required></label>
+        <label>지분율(%) <input type="number" step="any" min="0" max="100" name="ownership_pct"></label>
+        <label>담당 심사역 <input name="manager"></label>
+        <label>상태
+          <select name="status">
+            <option value="normal">정상</option>
+            <option value="watch">관찰</option>
+            <option value="alert">주의</option>
+          </select>
+        </label>
+        <label>최근 라운드 밸류(억원) <input type="number" step="any" min="0" name="latest_valuation"></label>
+        <label>보유지분 평가액(억원) <input type="number" step="any" min="0" name="fair_value"></label>
+        <label class="wide">회수(엑시트) 계획 <textarea name="exit_plan" rows="2"></textarea></label>
+        <label class="wide">메모 <textarea name="memo" rows="3"></textarea></label>
+      </fieldset>
+      <p id="form-error" class="error" role="alert"></p>
+      <div class="dialog-actions" id="company-actions">
+        <button type="button" class="btn danger" id="btn-delete">삭제</button>
+        <button type="submit" class="btn primary" id="btn-save">저장</button>
+      </div>
+    </form>
+
+    <section id="updates-section">
+      <h3>현황 이력</h3>
+      <form id="update-form" class="grid update-form">
+        <label>기준일 <input type="date" name="reported_on" required></label>
+        <label>매출(억원) <input type="number" step="any" name="revenue"></label>
+        <label>영업이익(억원) <input type="number" step="any" name="operating_profit"></label>
+        <label>현금(억원) <input type="number" step="any" name="cash"></label>
+        <label>인원(명) <input type="number" step="1" min="0" name="headcount"></label>
+        <label class="wide">코멘트 <input name="comment"></label>
+        <div class="wide"><button type="submit" class="btn">이력 추가</button></div>
+      </form>
+      <div class="table-wrap">
+        <table id="updates-table">
+          <thead>
+            <tr><th>기준일</th><th>매출</th><th>영업이익</th><th>현금</th><th>인원</th><th>코멘트</th><th></th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
